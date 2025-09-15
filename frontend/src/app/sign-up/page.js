@@ -8,7 +8,7 @@ import Link from "next/link";
 export default function SignUp() {
     return (
         <section className="w-full flex max-w-[100vw] h-screen">
-            <div className="w-[45%]    overflow-x-hidden "><Image className=" w-full object-cover scale-x-140 h-full " src={Img} width={720} height={600} alt="Image" /></div>
+            <div className="w-[45%] overflow-x-hidden "><Image className=" w-full object-cover scale-x-140 h-full " src={Img} width={720} height={600} alt="Image" /></div>
             <div className="flex w-[50%]  justify-center items-center max-h-[100vh] ">
                 <div className="w-full max-w-lg flex flex-col items-center  h-full bg-white p-8 space-y-6">
                     <Image className="mt-6" src={logo} width={300} height={95} alt="logo" />
