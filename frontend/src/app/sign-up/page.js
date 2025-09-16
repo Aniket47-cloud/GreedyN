@@ -13,7 +13,7 @@ export default function SignUp() {
                 <div className="w-full max-w-lg flex flex-col items-center  h-full bg-white p-8 space-y-6">
                     <Image className="mt-6" src={logo} width={300} height={95} alt="logo" />
                     <h2 className="text-4xl font-semibold text-gray-800 text-center mb-8">
-                        You're one click away from less busywork
+                        You&apos;re one click away from less busywork
                     </h2>
                     <div className="w-full">
                         <button className="flex items-center justify-center w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition-colors duration-200">
