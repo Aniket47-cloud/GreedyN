@@ -8,7 +8,8 @@ const userSchema = new Schema({
   avatarUrl: { type: String, default: '' },
   role: { type: String, enum: ['normal', 'superuser'], default: 'normal' },
   provider: { type: String, enum: ['local', 'google'], default: 'local' },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  lastLogin: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model('User', userSchema);

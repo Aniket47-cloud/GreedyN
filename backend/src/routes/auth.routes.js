@@ -7,6 +7,8 @@ router.post('/register', authCtrl.registerValidators, authCtrl.register);
 router.post('/login', authCtrl.loginValidators, authCtrl.login);
 
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+
 router.get(
   "/google/callback",
   passport.authenticate("google", { session: false, failureRedirect: "/" }),
@@ -15,22 +17,26 @@ router.get(
       expiresIn: process.env.JWT_EXPIRES_IN || "7d",
     });
 
-    // Set token in an HttpOnly cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // true if HTTPS
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
+    // bundle token + role
+    const payload = {
+      token,
+      user: {
+        id: req.user._id,
+        email: req.user.email,
+        name: req.user.name,
+        role: req.user.role,
+        lastLogin: req.user.lastLogin,
+      },
 
-    // 👇 Role-based redirect
-    if (req.user.role === "normal") {
-      res.redirect(process.env.FRONTEND_URL + "/dashboard/user");
-    }  else {
-      res.redirect(process.env.FRONTEND_URL + "/dashboard/superuser");
-    }
+    };
+
+    // encode to Base64 so URL is shorter/cleaner
+    const encoded = Buffer.from(JSON.stringify(payload)).toString("base64");
+
+    res.redirect(`${process.env.FRONTEND_URL}/auth/callback?data=${encoded}`);
   }
 );
+
 
 
 module.exports = router;
