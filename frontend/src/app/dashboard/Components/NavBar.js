@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
@@ -12,12 +12,26 @@ import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined
 import NotificationModal from "../Modals/NotificationModal";
 import ProfileModal from "../Modals/ProfileModal";
 import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
-export default function NavBar({setIsSiderBarOpen}) {
+import { useRouter } from "next/navigation";
+
+export default function NavBar({ setIsSiderBarOpen }) {
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef(null);
     const [showNotifications, setShowNotifications] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
+    const [role, setRole] = useState("");
+    const router = useRouter();
 
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        router.push("/login");
+    };
+    useEffect(() => {
+        const storedRole = localStorage.getItem("role");
+        setRole(storedRole);
+    }, []);
+    console.log(role);
 
     const notifications = [
         {
@@ -61,7 +75,12 @@ export default function NavBar({setIsSiderBarOpen}) {
         <nav className=" bg-white w-full max-w-[100vw] shadow-md relative ">
             <div className="w-[95%] bg-white mx-auto flex justify-between items-center py-1">
                 <div className="flex items-center gap-4">
-                    <ArrowForwardOutlinedIcon onClick={() => setIsSiderBarOpen(true)} className="text-gray-600" />
+                    {role !== "normal" && (
+                        <ArrowForwardOutlinedIcon
+                            onClick={() => setIsSiderBarOpen(true)}
+                            className="text-gray-600 cursor-pointer"
+                        />
+                    )}
                     <Image src={logo} width={250} height={150} alt="Logo" />
                     <div className=" flex items-center border border-gray-200 bg-gray-100 rounded-md px-2 ">
                         <SearchIcon />
@@ -89,7 +108,7 @@ export default function NavBar({setIsSiderBarOpen}) {
                                         Profile
                                     </button>
                                     <hr />
-                                    <button className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <button onClick={handleLogout} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         <LogoutIcon fontSize="small" />
                                         Logout
                                     </button>

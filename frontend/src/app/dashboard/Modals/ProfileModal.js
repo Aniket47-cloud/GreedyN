@@ -3,8 +3,16 @@
 import Image from "next/image";
 import LogoutIcon from '@mui/icons-material/Logout';
 import userLogo from "@/assets/images/1.jpg"
+import { useRouter } from "next/navigation";
 export default function ProfileModal({ isOpen, onClose }) {
+  const router = useRouter();
+   const handleLogout = () => {
+    localStorage.removeItem("token"); // remove token
+    router.push("/login"); // redirect to login page
+  };
   return (
+ 
+
     <div
       className={`fixed inset-0 z-40 flex justify-end transition-all duration-300 ${
         isOpen ? "visible" : "invisible"
@@ -75,7 +83,7 @@ export default function ProfileModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          <button className="mt-8 justify-center  w-full flex items-center gap-2 ">
+          <button onClick={handleLogout} className="mt-8 justify-center  w-full flex items-center gap-2 ">
              <LogoutIcon />
             Logout
           </button>

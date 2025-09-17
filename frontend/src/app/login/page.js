@@ -1,11 +1,53 @@
+'use client';
 import Image from "next/image";
 import Img from "@/assets/images/AuthDashImage.jpg"
 import logo from "@/assets/images/logo.svg"
 import google from "@/assets/images/google-logo.svg"
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 
 export default function Login() {
+    const router = useRouter();
+    const [formData, setFormData] = useState({ email: "", password: "" });
+    const [loading, setLoading] = useState(false);
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.type === "email" ? "email" : "password"]: e.target.value });
+    };
+
+    // handle form submit
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const res = await fetch("http://localhost:4000/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || "Login failed");
+
+            // Save JWT token
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("role", data.user.role);
+            if (data.user.role === 'normal') {
+                router.push("dashboard/user");
+            } else { router.push("dashboard/superuser") }
+
+
+
+
+
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <section className="w-full flex max-w-[100vw] h-screen">
             <div className="w-[45%]    overflow-x-hidden "><Image className=" w-full object-cover scale-x-140 h-full " src={Img} width={720} height={600} alt="Image" /></div>
@@ -23,7 +65,10 @@ export default function Login() {
                     </p>
 
 
-                    <button className="flex items-center justify-center w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition-colors duration-200">
+                    <a
+                        href="http://localhost:4000/api/auth/google"
+                        className="flex items-center justify-center w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition-colors duration-200"
+                    >
                         <Image
                             src={google}
                             width={20}
@@ -32,7 +77,7 @@ export default function Login() {
                             className="mr-2"
                         />
                         Log In with Google
-                    </button>
+                    </a>
 
                     <div className="flex items-center my-4 w-full">
                         <div className="flex-grow border-t border-gray-300"></div>
@@ -41,13 +86,15 @@ export default function Login() {
                     </div>
 
 
-                    <form className="w-full space-y-5">
+                    <form onSubmit={handleSubmit} className="w-full space-y-5">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Email Address <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="email"
+                                value={formData.email}
+                                onChange={handleChange}
                                 placeholder="Enter your registered email"
                                 className="block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0CAF60]"
                             />
@@ -60,6 +107,8 @@ export default function Login() {
                             <div className="relative">
                                 <input
                                     type="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
                                     placeholder="Enter your password"
                                     className="block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0CAF60]"
                                 />
@@ -81,11 +130,12 @@ export default function Login() {
                             </Link>
                         </div>
 
-                       
+
                         <button
                             type="submit"
-                            className="w-full py-3 bg-[#0CAF60] text-white rounded-md font-medium hover:bg-[#087742] transition-colors duration-200"
+                            className="w-full py-3 bg-[#0CAF60] text-white rounded-md font-medium hover:bg-[#087742] flex justify-center items-center gap-2 transition-colors duration-200"
                         >
+                            {loading && <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-6 w-6"></div>}
                             Login
                         </button>
                     </form>
