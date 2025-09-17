@@ -1,5 +1,5 @@
 'use client';
-import { useState } from "react";
+import { useState,useEffect, useContext } from "react";
 import { GridViewOutlined, PeopleAltOutlined } from "@mui/icons-material";
 import NavBar from "../Components/NavBar";
 import TodoTable from "../Components/TodoTable";
@@ -8,10 +8,31 @@ import Image from "next/image";
 import KeyboardDoubleArrowLeftOutlinedIcon from '@mui/icons-material/KeyboardDoubleArrowLeftOutlined';
 import whitelogo from "@/assets/images/whitelogo.svg"
 import UsersSection from "../Components/User";
+import { UserContext } from "@/context/UserContext";
 
 export default function SuperUserDashboardPage() {
     const [active, setActive] = useState("Dashboard");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [todos, setTodos] = useState([]);
+    const { user } = useContext(UserContext);
+      const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL
+      useEffect(() => {
+        const fetchTodos = async () => {
+          try {
+            const token = localStorage.getItem("token");
+            console.log(token);
+            const res = await fetch(`${API_URL}/api/todos`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            if (res.ok) setTodos(data);
+            else throw new Error(data.message || "Failed to fetch todos");
+          } catch (err) {
+            console.error(err.message);
+          }
+        };
+        fetchTodos();
+      }, []);
     return (
         <>
         <div className="flex ">
@@ -65,16 +86,16 @@ export default function SuperUserDashboardPage() {
       </aside>
        
         <main className="bg-gray-100 min-h-screen w-full flex flex-col ">
-          <NavBar setIsSiderBarOpen={setIsSidebarOpen} />
-      {active=== "Dashboard" && (    <section className={`max-w-[100vw] flex flex-col    ${isSidebarOpen ? "ml-82 w-[calc(100%-22rem)]" : " w-[95%] mx-auto"} transition-all duration-500`} >
-            <div className="flex justify-between items-center mt-6  ">
-                <p className="text-2xl font-bold text-black">Hello, Aniket</p>
-                <p className="text-gray-400  font-normal"> Last Login : 18/23/45 16:00</p>
-            </div>
-            <TodoUpdates/>
-           <TodoTable/>
-
-          </section>)}
+          <NavBar setIsSiderBarOpen={setIsSidebarOpen} todos={todos} />
+      {active=== "Dashboard" && (  <section className={`max-w-[100vw] flex flex-col   ${isSidebarOpen ? "ml-82 w-[calc(100%-22rem)]" : " w-[95%] mx-auto"} transition-all duration-500`} >
+                  <div className="flex justify-between items-center mt-6  ">
+                      <p className="text-2xl font-bold text-black">{`Hello, ${user?.name || "User"}`}</p>
+                      <p className="text-gray-400  font-normal"> {`Last Login: ${user?.lastLogin ? new Date(user.lastLogin).toLocaleString() : ""}`}</p>
+                  </div>
+                  <TodoUpdates todos={todos}/>
+                 <TodoTable todos={todos} setTodos={setTodos} />
+      
+                </section>)}
           {active==="Users"&&(<UsersSection open={isSidebarOpen}/>)}
         </main>
        

@@ -1,11 +1,11 @@
 'use client';
 
 
-export default function TodoUpdates() {
+export default function TodoUpdates({todos}) {
     const UpdateCards = {
-        AllTodos: 20,
-        Upcoming: 5,
-        Completed: 15
+        AllTodos: todos.length,
+        Upcoming: todos.filter(todo => todo.status === "Upcoming").length,
+        Completed: todos.filter(todo => todo.status === "Completed").length
 
     }
 

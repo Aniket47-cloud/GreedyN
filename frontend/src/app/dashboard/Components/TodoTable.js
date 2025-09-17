@@ -9,31 +9,14 @@ import TodoDetailsModal from "../Modals/TodoDetail";
 import { CreateOutlined } from "@mui/icons-material";
 
 
-export default function TodoTable() {
+export default function TodoTable({ todos, setTodos }) {
   const [filter, setFilter] = useState("All");
-   const [showDetails, setShowDetails] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState(null);
 
-  
-  const [todos, setTodos] = useState([
-    {
-      id: 1,
-      title: "Submit project report",
-      description:
-        "Finalize and submit the quarterly project report to the manager by EOD",
-      dueDate: "2023-08-16T18:00",
-      status: "Completed",
-    },
-    {
-      id: 2,
-      title: "Team stand-up meeting",
-      description:
-        "Attend the daily stand-up meeting with the product team on Zoom",
-      dueDate: "2023-08-16T18:00",
-      status: "Upcoming",
-    },
-  ]);
-   
+
+
+
   // Modal state
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -44,27 +27,74 @@ export default function TodoTable() {
     dueDate: "",
     status: "Upcoming",
   });
+  const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL
+
 
   // Filtered todos
   const filteredTodos =
     filter === "All" ? todos : todos.filter((todo) => todo.status === filter);
- 
-    const handleView = (todo) => {
+
+  const handleView = (todo) => {
     setSelectedTodo(todo);
     setShowDetails(true);
   };
-  // Handle Add/Edit Submit
-  const handleSubmit = (e) => {
+
+  // Add / Edit Todo
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
 
     if (isEditing) {
-      setTodos(
-        todos.map((todo) =>
-          todo.id === currentId ? { ...todo, ...formData } : todo
-        )
+      
+      const updatedTodos = todos.map((t) =>
+        t._id === currentId ? { ...t, ...formData } : t
       );
+      const prevTodos = [...todos];
+      setTodos(updatedTodos);
+
+      try {
+        const res = await fetch(`${API_URL}/api/todos/${currentId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        });
+        console.log("Put /todos response:", res.status);
+        if (!res.ok) throw new Error("Failed to update todo");
+      } catch (err) {
+        console.error(err);
+        setTodos(prevTodos); // rollback
+      }
     } else {
-      setTodos([...todos, { id: Date.now(), ...formData }]);
+     
+      const tempId = Date.now();
+      const newTodo = { _id: tempId, ...formData };
+      const prevTodos = [...todos];
+      setTodos([...todos, newTodo]);
+
+      try {
+        const res = await fetch(`${API_URL}/api/todos`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        });
+        const data = await res.json();
+        console.log("POST /todos response:", res.status, data);
+        if (res.ok) {
+
+          setTodos((t) =>
+            t.map((todo) => (todo._id === tempId ? data : todo))
+          );
+        } 
+      } catch (err) {
+        console.error(err);
+        setTodos(prevTodos); // rollback
+      }
     }
 
     setShowModal(false);
@@ -78,14 +108,33 @@ export default function TodoTable() {
     });
   };
 
-  const handleDelete = (id) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
-     setShowDetails(false);
+  // Delete Todo
+  const handleDelete = async (_id) => {
+    const prevTodos = [...todos];
+    setTodos(todos.filter((todo) => todo._id !== _id)); // optimistic delete
+    setShowDetails(false);
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/api/todos/${_id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to delete todo");
+    } catch (err) {
+      console.error(err);
+      setTodos(prevTodos); // rollback
+    }
   };
 
   const handleEdit = (todo) => {
-    setFormData(todo);
-    setCurrentId(todo.id);
+    setFormData({
+      title: todo.title,
+      description: todo.description,
+      dueDate: todo.dueDate,
+      status: todo.status,
+    });
+    setCurrentId(todo._id);
     setIsEditing(true);
     setShowModal(true);
     setShowDetails(false);
@@ -103,7 +152,7 @@ export default function TodoTable() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-          <FilterDropdown filter={filter} setFilter={setFilter} />
+            <FilterDropdown filter={filter} setFilter={setFilter} />
 
             {/* Add Button */}
             <button
@@ -138,23 +187,22 @@ export default function TodoTable() {
             <tbody>
               {filteredTodos.map((todo) => (
                 <tr
-                  key={todo.id}
+                  key={todo._id}
                   className="border-b hover:bg-gray-50 transition-colors"
                 >
                   <td onClick={() => handleView(todo)} className="px-4 py-3">
                     <p className="text-gray-900 font-medium">{todo.title}</p>
-                    <p className="text-gray-500 text-sm">{todo.description.slice(0,40) +"..."}</p>
+                    <p className="text-gray-500 text-sm">{todo.description.slice(0, 40) + "..."}</p>
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-700">
                     {new Date(todo.dueDate).toLocaleString()}
                   </td>
                   <td className="px-4 py-3">
                     <span
-                      className={`text-sm font-medium px-3 py-1 rounded-full ${
-                        todo.status === "Completed"
+                      className={`text-sm font-medium px-3 py-1 rounded-full ${todo.status === "Completed"
                           ? "text-green-600 bg-green-100"
                           : "text-yellow-600 bg-yellow-100"
-                      }`}
+                        }`}
                     >
                       {todo.status}
                     </span>
@@ -167,7 +215,7 @@ export default function TodoTable() {
                       <CreateOutlined fontSize="small" />
                     </button>
                     <button
-                      onClick={() => handleDelete(todo.id)}
+                      onClick={() => handleDelete(todo._id)}
                       className="text-red-500 p-1 rounded-md bg-red-200 hover:bg-red-300"
                     >
                       <DeleteOutlineIcon fontSize="small" />
@@ -185,7 +233,7 @@ export default function TodoTable() {
       </div>
 
       {/* Sliding Drawer Modal */}
-        <SlidingModal
+      <SlidingModal
         open={showModal}
         onClose={() => setShowModal(false)}
         isEditing={isEditing}
@@ -194,7 +242,7 @@ export default function TodoTable() {
         onSubmit={handleSubmit}
       />
       <TodoDetailsModal
-         open={showDetails}
+        open={showDetails}
         onClose={() => setShowDetails(false)}
         todo={selectedTodo}
         onEdit={handleEdit}

@@ -34,14 +34,14 @@ export default function NotificationModal({ isOpen, onClose, notifications }) {
                   {n.title}{" "}
                   <span
                     className={`${
-                      n.status === "Upcoming"
+                      n.type === "Upcoming"
                         ? "text-yellow-500"
-                        : n.status === "Completed"
+                        : n.type === "Completed"
                         ? "text-green-500"
                         : "text-gray-500"
                     }`}
                   >
-                    {n.status}
+                    {n.type}
                   </span>
                 </p>
                 <p className="text-sm text-gray-500">{n.date}</p>

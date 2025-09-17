@@ -36,7 +36,8 @@ export default function SignUp() {
             const data = await res.json();
             if (!res.ok) throw new Error(data.message || "Registration failed");
 
-            // Save JWT token in localStorage or cookies
+            
+            localStorage.setItem("user", JSON.stringify(data.user));
             localStorage.setItem("token", data.token);
             localStorage.setItem("role",data.user.role);
             if (data.user.role === 'normal') {
@@ -141,7 +142,7 @@ export default function SignUp() {
                                 {loading && <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-6 w-6"></div>}
                                 Get Started
                             </button>
-
+                           
                         </form>
                     </div>
 

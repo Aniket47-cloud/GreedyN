@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import Switch from "@mui/material/Switch";
 import { styled } from "@mui/material/styles";
 export default function UsersSection({open}) {
-  const [users, setUsers] = useState([
-    { id: 1, name: "Fawaz Ahamed", email: "Fawaz.a@greedygame.com", role: "Super Admin", isActive: true },
-    { id: 2, name: "Prabeen", email: "Prab@greedygame.com", role: "Viewer", isActive: false },
-    { id: 3, name: "Rahul Singh", email: "Rahul.S@greedygame.com", role: "Viewer", isActive: false },
-  ]);
+   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const token = typeof window !== "undefined" ? localStorage.getItem("token"):null;
   const IOSSwitch = styled((props) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
 ))(({ theme }) => ({
@@ -46,16 +46,57 @@ export default function UsersSection({open}) {
   },
 }));
   // Toggle role immediately
-  const handleToggle = (id) => {
+    useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/users`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Failed to fetch users");
+        const data = await res.json();
+        setUsers(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (token) fetchUsers();
+  }, [API_URL, token]);
+
+  // Toggle role
+  const handleToggle = async (id) => {
+    const prevUsers = [...users];
+
+    // Optimistic update
     setUsers((prev) =>
-      prev.map((user) =>
-        user.id === id
-          ? { ...user, role: user.isActive ? "Viewer" : "Super Admin", isActive: !user.isActive }
-          : user
+      prev.map((u) =>
+        u._id === id
+          ? { ...u, role: u.role === "superuser" ? "normal" : "superuser" }
+          : u
       )
     );
-  };
 
+    try {
+      const res = await fetch(`${API_URL}/api/users/${id}/role`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error("Failed to update role");
+
+      const updated = await res.json();
+      setUsers((prev) =>
+        prev.map((u) =>
+          u._id === updated.id ? { ...u, role: updated.role } : u
+        )
+      );
+    } catch (err) {
+      console.error(err);
+      setUsers(prevUsers); // rollback
+    }
+  };
   return (
     <section className={`bg-white rounded-lg shadow-sm p-4 mt-10  ${open ? "ml-82 w-[calc(100%-22rem)]" : " w-[95%] mx-auto"} transition-all duration-500`}>
       <div className="flex justify-between items-center mb-2">
@@ -71,7 +112,9 @@ export default function UsersSection({open}) {
           </button>
         </div>
       </div>
-
+ {loading ? (
+        <p className="text-sm text-gray-500">Loading users...</p>
+      ) : (<>
       <p className="text-xs text-gray-500 mb-3">
         Last Updated : 16/08/2023 18:00
       </p>
@@ -86,7 +129,7 @@ export default function UsersSection({open}) {
       {/* Users List */}
       {users.map((user) => (
         <div
-          key={user.id}
+          key={user._id}
           className="grid grid-cols-3 items-center text-sm py-3 border-b last:border-0"
         >
           <div>
@@ -95,14 +138,14 @@ export default function UsersSection({open}) {
           </div>
           <p className="text-center text-gray-700">{user.role}</p>
           <div className="flex justify-center">
-            <IOSSwitch
-              checked={user.isActive}
-              onChange={() => handleToggle(user.id)}
-              color="success"
-            />
+             <IOSSwitch
+                  checked={user.role === "superuser"}
+                  onChange={() => handleToggle(user._id)}
+                  color="success"
+                />
           </div>
         </div>
-      ))}
+      ))}     </> )}
     </section>
   );
 }

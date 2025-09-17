@@ -14,17 +14,20 @@ import ProfileModal from "../Modals/ProfileModal";
 import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
 import { useRouter } from "next/navigation";
 
-export default function NavBar({ setIsSiderBarOpen }) {
+export default function NavBar({ setIsSiderBarOpen, todos }) {
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef(null);
     const [showNotifications, setShowNotifications] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
     const [role, setRole] = useState("");
+    const [notifications, setNotifications] = useState([]);
+    const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
     const router = useRouter();
 
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
+        localStorage.clear();
+
         router.push("/login");
     };
     useEffect(() => {
@@ -33,34 +36,33 @@ export default function NavBar({ setIsSiderBarOpen }) {
     }, []);
     console.log(role);
 
-    const notifications = [
-        {
-            title: "Team stand-up meeting",
-            status: "Upcoming",
-            date: "16/08/2023 18:00",
-            description: "Attend the daily stand-up with the team on Zoom",
-        },
-        {
-            title: "Submit project report",
-            status: "Completed",
-            date: "16/08/2023 18:00",
-            description: "Finalize and submit the quarterly report to manager",
-        },
-        {
-            title: "Client follow-up email",
-            status: "Upcoming",
-            date: "16/08/2023 18:00",
-            description: "Draft and send follow-up email to client",
-        },
-        {
-            title: "Buy groceries",
-            status: "Upcoming",
-            date: "16/08/2023 18:00",
-            description: "Pick up essentials like milk, bread, vegetables",
-        },
-    ];
 
-    // Close dropdown when clicking outside
+
+    const fetchNotifications = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const res = await fetch(`${API_URL}/api/todos/notifications`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (res.ok) {
+                
+                const merged = [
+                    ...data.upcoming.map(n => ({ ...n, type: "Upcoming" })),
+                    ...data.completed.map(n => ({ ...n, type: "Completed" }))
+                ];
+                setNotifications(merged);
+            }
+        } catch (err) {
+            console.error("Error fetching notifications:", err);
+        }
+    };
+
+    useEffect(() => {
+        fetchNotifications(); 
+        const interval = setInterval(fetchNotifications, 60000); 
+        return () => clearInterval(interval);
+    }, []);
     useEffect(() => {
         function handleClickOutside(e) {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -123,6 +125,7 @@ export default function NavBar({ setIsSiderBarOpen }) {
             />
             <ProfileModal
                 isOpen={showProfile}
+                todos={todos}
                 onClose={() => setShowProfile(false)}
             />
         </nav>

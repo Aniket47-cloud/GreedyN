@@ -30,8 +30,9 @@ export default function Login() {
             const data = await res.json();
             if (!res.ok) throw new Error(data.message || "Login failed");
 
-            // Save JWT token
+            localStorage.setItem("user", JSON.stringify(data.user));
             localStorage.setItem("token", data.token);
+            
             localStorage.setItem("role", data.user.role);
             if (data.user.role === 'normal') {
                 router.push("dashboard/user");
@@ -138,6 +139,7 @@ export default function Login() {
                             {loading && <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-6 w-6"></div>}
                             Login
                         </button>
+                        <p>Dont have an account? <Link href="/sign-up" className="text-[#0CAF60] hover:underline">Sign up</Link></p>
                     </form>
                 </div>
             </div>

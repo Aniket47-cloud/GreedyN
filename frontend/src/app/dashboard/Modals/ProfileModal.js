@@ -4,12 +4,71 @@ import Image from "next/image";
 import LogoutIcon from '@mui/icons-material/Logout';
 import userLogo from "@/assets/images/1.jpg"
 import { useRouter } from "next/navigation";
-export default function ProfileModal({ isOpen, onClose }) {
+import { useState ,useEffect,useContext} from "react";
+import { UserContext } from "@/context/UserContext";
+export default function ProfileModal({ isOpen, onClose,todos }) {
   const router = useRouter();
    const handleLogout = () => {
-    localStorage.removeItem("token"); // remove token
-    router.push("/login"); // redirect to login page
+   localStorage.clear();
+    router.push("/login"); 
   };
+  const { user, setUser } = useContext(UserContext); 
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+  });
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+
+     
+      setFormData({
+        name: parsedUser.name || "",
+        email: parsedUser.email || "",
+      });
+    }
+  }, []);
+
+  
+
+  const [loading, setLoading] = useState(false);
+  const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  const handleUpdate = async () => {
+    setLoading(true);
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await fetch(`${API_URL}/api/users/me`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem("user", JSON.stringify(data));
+        setUser(data); 
+        alert("Profile updated!");
+        onClose();
+      } else {
+        alert(data.message || "Failed to update profile");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error updating profile");
+    } finally {
+      setLoading(false);
+      
+    }
+  };
+
   return (
  
 
@@ -41,8 +100,8 @@ export default function ProfileModal({ isOpen, onClose }) {
           <div className="flex items-center gap-3">
             <Image className="rounded-full " src={userLogo} width={40} height={40} alt="User Avatar" />
             <div>
-              <p className="font-medium">Fawaz Ahamed</p>
-              <p className="text-xs text-gray-500">Super Admin</p>
+              <p className="font-medium">{formData.name||""}</p>
+              <p className="text-xs text-gray-500">{user?.role === "normal"? "Normal User" : "Super User"}</p>
             </div>
           </div>
 
@@ -50,6 +109,10 @@ export default function ProfileModal({ isOpen, onClose }) {
             <label className="block text-sm font-medium">Name</label>
             <input
               type="text"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               
               className="w-full border rounded-lg p-2 mt-1"
             />
@@ -59,31 +122,35 @@ export default function ProfileModal({ isOpen, onClose }) {
             <label className="block text-sm font-medium">Email</label>
             <input
               type="email"
-             
+             value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+              
               className="w-full border rounded-lg p-2 mt-1"
             />
           </div>
 
-          <button className="bg-green-100 cursor-pointer text-green-700 px-4 py-2 rounded-lg w-full">
-            Update Profile
+          <button onClick={handleUpdate} className="bg-green-100 cursor-pointer text-green-700 px-4 py-2 rounded-lg w-full">
+           {loading ? "Updating..." : "Update Profile"}
           </button>
 
           <div className="flex justify-between  p-4 mt-6">
             <div className="border-r border-gray-300 mr-4 w-[33.33%] ">
-              <p className="text-lg font-semibold">12</p>
+              <p className="text-lg font-semibold">{todos.length}</p>
               <p className="text-sm text-gray-500">All Todos</p>
             </div>
             <div className="border-r border-gray-300 mx-4 w-[33.33%] ">
-              <p className="text-lg font-semibold">4</p>
+              <p className="text-lg font-semibold">{todos.filter(todo => todo.status==="Upcoming").length}</p>
               <p className="text-sm text-gray-500">Upcoming</p>
             </div>
             <div className=" w-[33.33%] ml-4">
-              <p className="text-lg font-semibold">6</p>
+              <p className="text-lg font-semibold">{todos.filter(todo => todo.status==="Completed").length}</p>
               <p className="text-sm text-gray-500">Completed</p>
             </div>
           </div>
 
-          <button onClick={handleLogout} className="mt-8 justify-center  w-full flex items-center gap-2 ">
+          <button onClick={handleLogout} className="mt-8 cursor-pointer justify-center  w-full flex items-center gap-2 ">
              <LogoutIcon />
             Logout
           </button>
