@@ -22,7 +22,7 @@ exports.register = async (req, res) => {
     const user = new User({ email, password: hashed, name, provider: 'local' });
     await user.save();
     const token = signToken(user);
-    res.json({ token, user: { id: user._id, email: user.email, name: user.name, role: user.role, lastLogin: user.lastLogin.toISOString() } });
+    res.json({ token, user: { id: user._id, email: user.email, name: user.name, role: user.role, lastLogin: user.lastLogin.toISOString(), createdAt: user.createdAt.toISOString(), avatarUrl: user.avatarUrl } });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }
@@ -45,7 +45,7 @@ exports.login = async (req, res) => {
     if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
 
     const token = signToken(user);
-    res.json({ token, user: { id: user._id, email: user.email, name: user.name, role: user.role, lastLogin: user.lastLogin.toISOString() } });
+    res.json({ token, user: { id: user._id, email: user.email, name: user.name, role: user.role, lastLogin: user.lastLogin.toISOString() , avatarUrl: user.avatarUrl, createdAt: user.createdAt.toISOString() } });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }

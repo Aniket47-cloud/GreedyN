@@ -7,6 +7,6 @@ const upload = require('../middleware/upload.middleware');
 router.get('/', authenticate, requireRole('superuser'), usersCtrl.listUsers);
 router.patch('/:id/role', authenticate, requireRole('superuser'), usersCtrl.toggleRole);
 
-router.put('/me', authenticate,  usersCtrl.updateProfile);
+router.put('/me', authenticate, upload.single('avatar'), usersCtrl.updateProfile);
 
 module.exports = router;

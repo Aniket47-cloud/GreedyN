@@ -25,6 +25,11 @@ exports.updateProfile = async (req, res) => {
     const updates = {};
     if (req.body.name) updates.name = req.body.name;
     if (req.body.email) updates.email = req.body.email;
+     if (req.file) {
+      updates.avatarUrl = req.file.path; 
+    } else if (req.body.avatarUrl) {
+      updates.avatarUrl = req.body.avatarUrl; 
+    }
 
     const user = await User.findByIdAndUpdate(
       req.user._id,

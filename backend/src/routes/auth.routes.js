@@ -26,6 +26,8 @@ router.get(
         name: req.user.name,
         role: req.user.role,
         lastLogin: req.user.lastLogin,
+        createdAt: req.user.createdAt,
+        avatarUrl: req.user.avatarUrl,
       },
 
     };
