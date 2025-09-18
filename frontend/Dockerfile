@@ -1,8 +1,8 @@
-# Stage 1: Install dependencies
+# Stage 1: Install dependencies (including devDependencies)
 FROM node:18-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm install --production
+RUN npm install
 
 # Stage 2: Build the app
 FROM node:18-alpine AS builder
