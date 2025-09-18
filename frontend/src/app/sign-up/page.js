@@ -27,7 +27,7 @@ export default function SignUp() {
         setLoading(true);
         e.preventDefault();
         try {
-            const res = await fetch(`${process.env.BACKEND_URL}/api/auth/register`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)
@@ -65,7 +65,7 @@ export default function SignUp() {
                     </h2>
                     <div className="w-full">
                         <a
-                            href={`${process.env.BACKEND_URL}/api/auth/google`}
+                            href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google`}
                             className="flex items-center justify-center w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition-colors duration-200"
                         >
                             <Image

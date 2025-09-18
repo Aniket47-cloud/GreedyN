@@ -14,8 +14,8 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.type === "email" ? "email" : "password"]: e.target.value });
-    };
-
+    }; 
+    console.log(process.env.NEXT_PUBLIC_BACKEND_URL);
     // handle form submit
     const handleSubmit = async (e) => {
         e.preventDefault();
