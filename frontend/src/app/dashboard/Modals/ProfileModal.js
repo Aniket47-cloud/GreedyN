@@ -39,6 +39,7 @@ export default function ProfileModal({ isOpen, onClose, todos }) {
         setAvatarPreview(parsedUser.avatarUrl); 
       }
     }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [API_URL]);
 
 
