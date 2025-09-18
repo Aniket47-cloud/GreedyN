@@ -5,6 +5,7 @@ import TodoTable from "../Components/TodoTable";
 import TodoUpdates from "../Components/TodoUpdates";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/context/UserContext";
+import { Api } from "@mui/icons-material";
 
 export default function UserDashboardPage() {
   const [todos, setTodos] = useState([]);
@@ -19,6 +20,8 @@ export default function UserDashboardPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
+        console.log("Todos response:", res.status, data);
+
         if (res.ok) setTodos(data);
         else throw new Error(data.message || "Failed to fetch todos");
       } catch (err) {
@@ -26,9 +29,9 @@ export default function UserDashboardPage() {
       }
     };
     fetchTodos();
-  }, []);
+  }, [API_URL]);
     return (
-        <main className="bg-gray-100 min-h-screen min-w-screen flex flex-col ">
+        <main className="bg-gray-100 min-h-screen min-w-screen flex flex-col overflow-x-hidden overflow-y-auto ">
           <NavBar todos={todos} />
           <section className="max-w-[100vw] flex flex-col  w-[95%] mx-auto " >
             <div className="flex justify-between items-center mt-6  ">

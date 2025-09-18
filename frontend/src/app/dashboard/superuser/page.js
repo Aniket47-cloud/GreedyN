@@ -32,7 +32,7 @@ export default function SuperUserDashboardPage() {
           }
         };
         fetchTodos();
-      }, []);
+      }, [API_URL]);
     return (
         <>
         <div className="flex ">

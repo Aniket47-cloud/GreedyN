@@ -1,5 +1,6 @@
 'use client';
 
+import { AddOutlined } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
 
 
@@ -22,21 +23,21 @@ export default function SlidingModal({open,
           onClick={onClose}
         ></div>
 
-        {/* Panel */}
+        {/* sliding panel */}
         <div
           className={`relative w-full max-w-md bg-white h-full shadow-xl transform transition-transform duration-300 ${
             open ? "translate-x-0" : "translate-x-full"
           }`}
         >
-          <div className="flex justify-between items-center px-6 py-4 border-b">
-            <h3 className="text-lg font-semibold">
+          <div className="flex justify-between items-center px-6 py-4">
+            <h3 className="text-xl font-semibold">
               {isEditing ? "Edit Todo" : "Add Todo"}
             </h3>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600"
             >
-              <CloseIcon />
+              <CloseIcon  sx={{ fontSize: "large" }}/>
             </button>
           </div>
 
@@ -52,7 +53,7 @@ export default function SlidingModal({open,
                 onChange={(e) =>
                   setFormData({ ...formData, title: e.target.value })
                 }
-                className="mt-1 w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-green-500"
+                className="mt-1 w-full px-3 py-2 focus:outline-none shadow-md border border-gray-100 rounded-md text-sm focus:ring-2 focus:ring-green-500"
                 required
               />
             </div>
@@ -67,7 +68,7 @@ export default function SlidingModal({open,
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
-                className="mt-1 w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-green-500"
+                className="mt-1 w-full px-3 py-2  rounded-md text-sm focus:outline-none shadow-md border border-gray-100 focus:ring-2 focus:ring-green-500"
                 required
               ></textarea>
             </div>
@@ -86,7 +87,7 @@ export default function SlidingModal({open,
                     dueDate: e.target.value + "T" + (formData.dueDate.split("T")[1] || "00:00"),
                   })
                 }
-                className="mt-1 w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-green-500"
+                className="mt-1 w-full px-3 py-2 focus:outline-none shadow-md border border-gray-100 rounded-md text-sm focus:ring-2 focus:ring-green-500"
                 required
               />
             </div>
@@ -105,13 +106,13 @@ export default function SlidingModal({open,
                     dueDate: (formData.dueDate.split("T")[0] || "2023-08-16") + "T" + e.target.value,
                   })
                 }
-                className="mt-1 w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-green-500"
+                className="mt-1 w-full px-3 py-2 focus:outline-none shadow-md border border-gray-100 rounded-md text-sm focus:ring-2 focus:ring-green-500"
                 required
               />
             </div>
 
             {/* Status */}
-            <div>
+            <div  className="hidden">
               <label className="block text-sm font-medium text-gray-700">
                 Status
               </label>
@@ -120,7 +121,7 @@ export default function SlidingModal({open,
                 onChange={(e) =>
                   setFormData({ ...formData, status: e.target.value })
                 }
-                className="mt-1 w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-green-500"
+                className="mt-1 w-full px-3 py-2 focus:outline-none shadow-md border border-gray-100 rounded-md text-sm focus:ring-2 focus:ring-green-500"
               >
                 <option value="Upcoming">Upcoming</option>
                 <option value="Completed">Completed</option>
@@ -128,18 +129,13 @@ export default function SlidingModal({open,
             </div>
 
             {/* Buttons */}
-            <div className="flex justify-end gap-3 pt-4 border-t">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 text-sm bg-gray-200 rounded-md hover:bg-gray-300"
-              >
-                Cancel
-              </button>
+            <div className="flex justify-end gap-3 pt-4 ">
+              
               <button
                 type="submit"
-                className="px-4 py-2 text-sm bg-green-500 text-white rounded-md hover:bg-green-600"
+                className="px-4 flex items-center justify-center gap-1 py-2 text-sm bg-green-600 text-white rounded-md hover:bg-green-600"
               >
+                <AddOutlined sx={{ fontSize: "20px" }} />
                 {isEditing ? "Update Todo" : "Create Todo"}
               </button>
             </div>

@@ -21,7 +21,7 @@ export default function NotificationModal({ isOpen, onClose, notifications }) {
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex justify-between items-center p-4 border-b">
+        <div className="flex justify-between items-center p-4 ">
           <h2 className="text-lg font-semibold">All Notifications</h2>
           <button onClick={onClose} className="text-gray-500">✕</button>
         </div>
@@ -29,23 +29,24 @@ export default function NotificationModal({ isOpen, onClose, notifications }) {
         <div className="p-4 space-y-3 overflow-y-auto h-full">
           {notifications.length > 0 ? (
             notifications.map((n, index) => (
-              <div key={index} className="p-4 border rounded-lg">
-                <p className="font-medium">
-                  {n.title}{" "}
+              <div key={index} className="p-4 border border-gray-300 shadow-sm flex flex-col items-start space-y-1 rounded-lg">
+                <p className="font-bold text-black">
+                  {n.title}{"      "} 
                   <span
                     className={`${
                       n.type === "Upcoming"
-                        ? "text-yellow-500"
+                        ? "text-yellow-500 bg-amber-100 px-2 py-1 font-medium ml-2 rounded-full"
                         : n.type === "Completed"
-                        ? "text-green-500"
+                        ? "text-green-500 bg-green-100 px-2 py-1 rounded-full font-medium ml-2"
                         : "text-gray-500"
                     }`}
                   >
                     {n.type}
                   </span>
                 </p>
-                <p className="text-sm text-gray-500">{n.date}</p>
-                <p className="text-sm text-gray-400">{n.description}</p>
+                 <p className="text-sm text-gray-400">{n.description}</p>
+                <p className="text-sm text-gray-500">{new Date(n.dueDate).toLocaleString()}</p>
+               
               </div>
             ))
           ) : (

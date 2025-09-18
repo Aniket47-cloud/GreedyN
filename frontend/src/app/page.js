@@ -9,6 +9,7 @@ export default function Home() {
   useEffect(() => {
     const role = localStorage.getItem("role");
     const token = localStorage.getItem("token");
+    setLoading(true); 
     if (!role || !token) {
       router.push("/login");
     } else if (role === "normal") {

@@ -166,7 +166,7 @@ export default function TodoTable({ todos, setTodos }) {
                   status: "Upcoming",
                 });
               }}
-              className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded-md"
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-md"
             >
               + Add Todo
             </button>
@@ -174,10 +174,10 @@ export default function TodoTable({ todos, setTodos }) {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-50 border-b text-sm text-gray-500 text-left">
+        <div className="overflow-auto max-h-[250px]">
+          <table className="w-full  border-collapse">
+           <thead className="sticky top-0 bg-gray-100 z-10">
+      <tr className="text-sm text-gray-500 text-left">
                 <th className="px-4 py-3">Todo</th>
                 <th className="px-4 py-3">Due Date</th>
                 <th className="px-4 py-3">Status</th>
@@ -188,14 +188,14 @@ export default function TodoTable({ todos, setTodos }) {
               {filteredTodos.map((todo) => (
                 <tr
                   key={todo._id}
-                  className="border-b hover:bg-gray-50 transition-colors"
+                  className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
                 >
                   <td onClick={() => handleView(todo)} className="px-4 py-3">
                     <p className="text-gray-900 font-medium">{todo.title}</p>
-                    <p className="text-gray-500 text-sm">{todo.description.slice(0, 40) + "..."}</p>
+                    <p className="text-gray-500 text-xs">{todo.description.slice(0, 40) + "..."}</p>
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-700">
-                    {new Date(todo.dueDate).toLocaleString()}
+                    {new Date(todo.dueDate).toLocaleDateString()}<br /> {new Date(todo.dueDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </td>
                   <td className="px-4 py-3">
                     <span
