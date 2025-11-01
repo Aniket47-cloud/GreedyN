@@ -81,7 +81,7 @@ export default function NavBar({ setIsSiderBarOpen, todos }) {
                             className="text-gray-600 cursor-pointer"
                         />
                     )}
-                    <h1 className="mb-6 text-[25px] font-extrabold tracking-tight text-black uppercase">
+                    <h1 className=" text-[25px] font-extrabold tracking-tight text-black uppercase">
   <span className="font-sans">Greedy</span>
   <span className="ml-2 font-sans">Notes</span>
 </h1>
