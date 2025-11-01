@@ -55,11 +55,14 @@ export default function Login() {
             <div className="flex w-[55%] bg-white justify-center items-center max-h-[100vh] ">
                 <div className="w-full max-w-lg flex flex-col items-center p-8">
 
-                    <Image className="mb-6" src={logo} width={280} height={95} alt="logo" />
+                   <h1 className="mb-6 text-[55px] font-extrabold tracking-tight text-black uppercase">
+  <span className="font-sans">Greedy</span>
+  <span className="ml-2 font-sans">Notes</span>
+</h1>
 
 
                     <h2 className="text-3xl font-semibold text-gray-900 text-center mb-2">
-                        Welcome to GGTodo
+                        Welcome to GNTodo
                     </h2>
                     <p className="text-gray-500 text-lg font-normal text-center mb-6">
                         To get started, please sign in
