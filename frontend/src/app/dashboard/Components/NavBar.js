@@ -81,7 +81,10 @@ export default function NavBar({ setIsSiderBarOpen, todos }) {
                             className="text-gray-600 cursor-pointer"
                         />
                     )}
-                    <Image src={logo} width={250} height={150} alt="Logo" />
+                    <h1 className="mb-6 text-[45px] font-extrabold tracking-tight text-black uppercase">
+  <span className="font-sans">Greedy</span>
+  <span className="ml-2 font-sans">Notes</span>
+</h1>
                     <div className=" flex items-center border border-gray-200 bg-gray-100 rounded-md px-2 ">
                         <SearchIcon />
                         <input type="text" placeholder="Search..." className="px-4 py-2 text-neutral-500  focus:outline-none " />
