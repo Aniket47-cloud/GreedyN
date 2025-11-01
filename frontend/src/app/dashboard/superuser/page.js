@@ -43,7 +43,7 @@ export default function SuperUserDashboardPage() {
                 : "-translate-x-full opacity-0 pointer-events-none"}`}>
         {/* Logo */}
   <div className="flex items-center gap-1  justify-between w-full mx-auto p-6 ">
-  <h1 className="mb-6 text-[45px] font-extrabold tracking-tight text-white uppercase">
+  <h1 className="mb-6 text-[25px] font-extrabold tracking-tight text-white uppercase">
   <span className="font-sans">Greedy</span>
   <span className="ml-2 font-sans">Notes</span>
 </h1>
