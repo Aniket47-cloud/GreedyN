@@ -59,7 +59,7 @@ export default function SignUp() {
             <div className="w-[45%] overflow-x-hidden "><Image className=" w-full object-cover scale-x-140 h-full " src={Img} width={720} height={600} alt="Image" /></div>
             <div className="flex w-[50%]  justify-center items-center max-h-[100vh] ">
                 <div className="w-full max-w-lg flex flex-col items-center  h-full bg-white p-8 space-y-6">
-                  <h1 className="mb-6 text-[55px] font-extrabold tracking-tight text-black uppercase">
+                  <h1 className="mb-6 text-[45px] font-extrabold tracking-tight text-black uppercase">
   <span className="font-sans">Greedy</span>
   <span className="ml-2 font-sans">Notes</span>
 </h1>
