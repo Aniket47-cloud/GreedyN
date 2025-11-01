@@ -55,7 +55,7 @@ export default function Login() {
             <div className="flex w-[55%] bg-white justify-center items-center max-h-[100vh] ">
                 <div className="w-full max-w-lg flex flex-col items-center p-8">
 
-                   <h1 className="mb-6 text-[55px] font-extrabold tracking-tight text-black uppercase">
+                   <h1 className="mb-6 text-[45px] font-extrabold tracking-tight text-black uppercase">
   <span className="font-sans">Greedy</span>
   <span className="ml-2 font-sans">Notes</span>
 </h1>
